@@ -13,7 +13,6 @@ pub struct RedisStore {
     subscriber: Arc<Mutex<Subscriber>>
 }
 
-
 impl RedisStore {
     
     pub fn create(url: &'static str, parent: &'static str, handlers: HashMap<String, Handle>) 

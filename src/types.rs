@@ -28,7 +28,7 @@ pub enum IdentityErr {
 }
 
 impl From<ParseIntError> for IdentityErr {
-    fn from(error: ParseIntError) -> IdentityErr {
+    fn from(_: ParseIntError) -> IdentityErr {
         IdentityErr::DigitError
     }
 }

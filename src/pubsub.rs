@@ -7,6 +7,16 @@ use std::sync::Arc;
 // use std::thread::{self, JoinHandle};
 use types::{Handle, Identity};
 
+
+///
+/// Subscriber struct that holds the logic for redis storage subscription.
+///
+/// It store all functions that need to be called when redis notify an update.
+///
+/// TODO:
+/// - Graceful exits in threads
+/// - Panic or other error handling loop
+///
 pub struct Subscriber {
     parent: &'static str,
     url: &'static str,
