@@ -37,7 +37,7 @@ fn test_central_publish() {
         assert_eq!(value, Ok(String::from("test:test")));
     }));
 
-    let mut store = central::storage::RedisStore::create("redis://127.0.0.1", "central", handlers);
+    let mut store = central::storage::RedisStore::create("redis://127.0.0.1", "central", handlers).unwrap();
     
     store.set("hello", credential);
 

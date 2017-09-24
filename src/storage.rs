@@ -1,10 +1,9 @@
-use redis::{Client, Commands};
+use redis::{Client, Commands, RedisError};
 use std::sync::{Arc, Mutex};
 use pubsub::Subscriber;
 use types::{Identity, Storage, BroadcastStorage, Handle};
 use std::collections::HashMap;
 use std::thread;
-use std::time::{SystemTime, UNIX_EPOCH};
 use std::clone::Clone;
 
 pub struct RedisStore {
@@ -14,9 +13,11 @@ pub struct RedisStore {
     subscriber: Arc<Mutex<Subscriber>>
 }
 
+
 impl RedisStore {
     
-    pub fn create(url: &'static str, parent: &'static str, handlers: HashMap<String, Handle>) -> RedisStore {
+    pub fn create(url: &'static str, parent: &'static str, handlers: HashMap<String, Handle>) 
+        -> Result<RedisStore, RedisError> {
         
         let identity : Identity = Identity::default();
         let subscriber = Arc::new(Mutex::new(Subscriber::new(url, parent, identity, handlers)));
@@ -28,14 +29,12 @@ impl RedisStore {
             subscriber.call();
         });
 
-        let store = RedisStore {
+        Ok(RedisStore {
             parent: parent,
-            inner: Arc::new(Mutex::new(Client::open(url).unwrap())),
+            inner: Arc::new(Mutex::new(Client::open(url)?)),
             identity: identity,
             subscriber: subscriber
-        };
-
-        store
+        })
     }
 }
 
