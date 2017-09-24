@@ -1,15 +1,16 @@
 use redis::{Client, Commands};
 use std::sync::{Arc, Mutex};
 use pubsub::Subscriber;
-use types::{Storage, BroadcastStorage, Handle};
+use types::{Identity, Storage, BroadcastStorage, Handle};
 use std::collections::HashMap;
 use std::thread;
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::clone::Clone;
 
 pub struct RedisStore {
     parent: &'static str,
     inner: Arc<Mutex<Client>>,
-    identity: (u64, u32),
+    identity: Identity,
     subscriber: Arc<Mutex<Subscriber>>
 }
 
@@ -17,11 +18,7 @@ impl RedisStore {
     
     pub fn create(url: &'static str, parent: &'static str, handlers: HashMap<String, Handle>) -> RedisStore {
         
-        let identity : (u64, u32) = {
-            let duration = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-            (duration.as_secs(), duration.subsec_nanos())
-        };
-
+        let identity : Identity = Identity::default();
         let subscriber = Arc::new(Mutex::new(Subscriber::new(url, parent, identity, handlers)));
         let shared_subscriber = subscriber.clone();
         
@@ -48,7 +45,7 @@ impl BroadcastStorage for RedisStore {
         let inner = &*inner.lock().unwrap();
         let _: Result<String, _> = inner.publish(
             format!("{}:{}", self.parent, path),
-            self.identity(),
+            format!("{}", self.identity())
         );
     }
 }
@@ -73,8 +70,9 @@ impl Storage for RedisStore {
         Ok(values)
     }
 
-    fn identity(&self) -> String {
-        format!("{}:{}", self.identity.0, self.identity.1)
+    fn identity(&self) -> Identity {
+        self.identity.clone()
+        // format!("{}:{}", self.identity.0, self.identity.1)
     }
 
     fn subscriber(&self) -> Arc<Mutex<Subscriber>> {

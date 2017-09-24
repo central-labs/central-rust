@@ -47,19 +47,3 @@ fn test_central_publish() {
 
     thread::sleep(Duration::from_secs(1));
 }
-
-#[test]
-fn test_central_basic() {
-    let _ = env_logger::init();
-
-    let credential = Credential {
-        user: String::from("test"),
-        password: String::from("test")
-    };
-
-    let mut handlers : HashMap<String, Handle> = HashMap::new();
-
-    let mut store = central::storage::RedisStore::create("redis://127.0.0.1", "central", handlers);
-    
-    store.set("hello", credential);
-}

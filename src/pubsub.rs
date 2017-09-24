@@ -5,17 +5,17 @@ use redis::{Commands, Client};
 // use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 // use std::thread::{self, JoinHandle};
-use types::Handle;
+use types::{Handle, Identity};
 
 pub struct Subscriber {
     parent: &'static str,
     url: &'static str,
-    identity: (u64, u32),
+    identity: Identity,
     handlers: Arc<RwLock<HashMap<String, Handle>>>,
 }
 
 impl Subscriber {
-    pub fn new(url: &'static str, parent: &'static str, identity: (u64, u32), handlers: HashMap<String, Handle>) -> Subscriber {
+    pub fn new(url: &'static str, parent: &'static str, identity: Identity, handlers: HashMap<String, Handle>) -> Subscriber {
         Subscriber {
             parent: parent,
             url: url,
@@ -23,12 +23,6 @@ impl Subscriber {
             handlers: Arc::new(RwLock::new(handlers)),
         }
     }
-
-    // pub fn add(&mut self, namespace: String, handle: Handle) {
-    //     let mut handlers = &*self.handlers.clone();
-    //     let mut handlers = handlers.write().unwrap();
-    //     handlers.insert(namespace, handle);
-    // }
 
     pub fn handlers(&self) -> Arc<RwLock<HashMap<String, Handle>>> {
         self.handlers.clone()

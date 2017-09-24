@@ -1,7 +1,7 @@
-#![feature(fn_traits)]
+#![feature(fn_traits, try_from)]
 
 extern crate redis;
-// extern crate rand;
+extern crate rand;
 
 #[macro_use]
 extern crate log;
