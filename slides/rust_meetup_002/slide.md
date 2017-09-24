@@ -49,6 +49,7 @@ puts credential.username
 
 ```rust
 extern crate central;
+#![macro_use]
 extern crate central_feature;
 
 feature! Credential {
